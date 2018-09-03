@@ -1,0 +1,55 @@
+
+# THC connections
+net thc-enable pyvcp.thc-enable thc.enable
+net thc-voltmeter pyvcp.actual-volts thc.volts
+net thc-voltset pyvcp.volts-requested thc.volts-requested
+net thc-req-vel thc.requested-vel &lt;= motion.requested-vel
+net thc-cur-vel thc.current-vel &lt;= motion.current-vel
+net thc-vel-status pyvcp.vel-status thc.vel-status
+net thc-vel-tol pyvcp.vel-tol thc.vel-tol
+
+#net thc-volts-tol pyvcp.volts-tolerance-i thc.volts-tol
+
+# MDI commands 
+# rapid to home button
+net remote-rapid-home halui.mdi-command-00 &lt;= pyvcp.rapid-to-home
+
+# The Joypad connections
+loadrt mux4 count=1
+addf mux4.0 servo-thread
+loadrt or2 count=2
+addf or2.0 servo-thread
+addf or2.1 servo-thread
+loadrt sum2 count=2
+addf sum2.0 servo-thread
+addf sum2.1 servo-thread
+
+# set the jog speed for the joypad
+setp mux4.0.in0 0
+setp mux4.0.in1 25
+setp mux4.0.in2 100
+setp mux4.0.in3 200
+
+# the following does the magic of setting the jog speeds
+net remote-speed-slow or2.0.in0 input.0.btn-trigger
+net remote-speed-medium or2.1.in0 input.0.btn-thumb
+net remote-speed-fast or2.0.in1 or2.1.in1 input.0.btn-thumb2
+
+net joy-speed-1 mux4.0.sel0 &lt;= or2.0.out
+net joy-speed-2 mux4.0.sel1 &lt;= or2.1.out
+
+net remote-jog-speed halui.jog-speed &lt;= mux4.0.out
+
+net joy-x-jog halui.jog.0.analog &lt;= input.0.abs-x-position 
+
+# reverse the analog so the Y axis will go in the expected directionaddf mux4.0 servo-thread
+setp sum2.0.gain0 -1
+net reverse-y sum2.0.in0 &lt;= input.0.abs-y-position
+net joy-y-jog halui.jog.1.analog &lt;= sum2.0.out
+
+# reverse the analog so the Z axis will go in the expected direction
+setp sum2.1.gain0 -1 
+net reverse-z sum2.1.in0 &lt;= input.0.abs-rz-position
+net joy-z-jog halui.jog.2.analog &lt;= sum2.1.out
+
+
