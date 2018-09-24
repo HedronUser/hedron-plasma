@@ -7,6 +7,9 @@ loadrt hal_parport cfg="0x378 out"
 setp parport.0.reset-time 1000
 loadrt stepgen step_type=0,0,0
 
+# for remote joypad
+loadusr -W hal_input -KRAL X-Box
+
 addf parport.0.read base-thread
 addf stepgen.make-pulses base-thread
 addf parport.0.write base-thread
@@ -47,7 +50,7 @@ net home-z          <= parport.0.pin-10-in
 net din-02          <= parport.0.pin-11-in
 net din-01          <= parport.0.pin-12-in
 net din-00          <= parport.0.pin-13-in
-net estop-ext       <= parport.0.pin-15-in-not
+net estop-ext       <= parport.0.pin-15-in
 
 setp stepgen.0.position-scale [AXIS_0]SCALE
 setp stepgen.0.steplen 1

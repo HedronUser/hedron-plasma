@@ -2,3 +2,47 @@
 # The commands in this file are run after the AXIS GUI (including PyVCP panel) starts
 
 sets spindle-at-speed true
+
+loadrt or2 count=2
+loadrt mux4 count=1
+
+addf or2.0 servo-thread
+addf or2.1 servo-thread
+addf mux4.0 servo-thread
+
+setp input.0.abs-hat0y-scale -1
+setp input.0.abs-y-scale -32000
+
+# set the jog speed for the joypad again use numbers that make sense for your machine
+setp mux4.0.in0 0 # this one must be 0 to prevent motion unless a button is pressed
+setp mux4.0.in1 200
+setp mux4.0.in2 200
+setp mux4.0.in3 400
+
+# the following does the magic of setting the jog speeds
+net remote-speed-slow or2.0.in0 input.0.btn-a
+net remote-speed-medium or2.1.in0 input.0.btn-thumbr
+net remote-speed-fast or2.0.in1 or2.1.in1 input.0.btn-b
+
+net joy-speed-1 mux4.0.sel0 <= or2.0.out
+net joy-speed-2 mux4.0.sel1 <= or2.1.out
+net joy-speed-final halui.jog-speed <= mux4.0.out
+
+net joy-x-jog halui.jog.0.analog <= input.0.abs-hat0x-position 
+net joy-y-jog halui.jog.1.analog <= input.0.abs-hat0y-position
+net joy-z-jog halui.jog.2.analog <= input.0.abs-y-position 
+
+net homeZ input.0.btn-tr => halui.joint.2.home
+net homeX input.0.btn-x => halui.joint.0.home
+net homeY input.0.btn-y => halui.joint.1.home
+
+net pause input.0.btn-mode => halui.program.pause
+net resume input.0.btn-start => halui.program.resume
+
+#pause halui.program.pause
+#resume halui.program.resume
+
+# [BUTTON-SAMPLES] use your own joypad pin-names
+#One button sample
+#net spindleOff input.0.btn-thumb2 => halui.spindle.stop
+#net spindleOn input.0.btn-trigger => halui.spindle.start
