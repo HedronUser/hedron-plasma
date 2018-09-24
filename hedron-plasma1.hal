@@ -40,7 +40,7 @@ setp parport.0.pin-06-out-invert 1
 net zstep           => parport.0.pin-06-out
 setp parport.0.pin-06-out-reset 1
 net zdir            => parport.0.pin-07-out
-#setp parport.0.pin-09-out-invert 1
+setp parport.0.pin-09-out-invert 1
 net spindle-on      => parport.0.pin-09-out
 net dout-00         => parport.0.pin-08-out
 net home-z          <= parport.0.pin-10-in
